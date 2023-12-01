@@ -16,4 +16,5 @@ Don't forget that the character has his own gender. In one sentence in two diffe
 In this case, you can modify the text:
 > "Клиент хотел бы, чтобы ты $Gсобрал:собрала; для него овощей.$B$BОвощи посажены в Академии."
 
-You can see `$Gсобрал:собрала;` construction, where `собрал` displayed if character has male gender, or `собрала` if female gender.
+You can see `$Gсобрал:собрала;` construction, where `собрал` displayed if character has male gender, or `собрала` if female gender.  
+![image](https://i.imgur.com/UTDk4Vr.png)
