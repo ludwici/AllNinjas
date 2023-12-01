@@ -66,6 +66,12 @@ function AllNinjas:LoadDefaults()
     QuestInfoObjectivesHeader:SetText(self:GetGlobalValue("QUEST_OBJECTIVES"));
     QuestFrameCompleteButton:SetText(self:GetGlobalValue("CONTINUE"));
     QuestFrameGoodbyeButton:SetText(self:GetGlobalValue("CANCEL"));
+    QuestProgressRequiredItemsText:SetText(self:GetGlobalValue("TURN_IN_ITEMS"));
+    CharacterFrameTab1:SetText(self:GetGlobalValue("CHARACTER"));
+    CharacterFrameTab2:SetText(self:GetGlobalValue("PETS"));
+    CharacterFrameTab3:SetText(self:GetGlobalValue("REPUTATION_ABBR"));
+    CharacterFrameTab4:SetText(self:GetGlobalValue("SKILLS_ABBR"));
+    CharacterFrameTab5:SetText(self:GetGlobalValue("CURRENCY"));
 
     QuestLogFrameTrackButton:SetScript("OnEnter", function (frame)
 		GameTooltip_AddNewbieTip(frame, self:GetGlobalValue("TRACK_QUEST"), 1.0, 1.0, 1.0, self:GetGlobalValue("NEWBIE_TOOLTIP_TRACKQUEST"), 1);
@@ -75,6 +81,26 @@ function AllNinjas:LoadDefaults()
     end);
     QuestLogFramePushQuestButton:SetScript("OnEnter", function (frame)
 		GameTooltip_AddNewbieTip(frame, self:GetGlobalValue("SHARE_QUEST"), 1.0, 1.0, 1.0, self:GetGlobalValue("NEWBIE_TOOLTIP_SHAREQUEST"), 1);
+    end);
+    CharacterFrameTab1:SetScript("OnEnter", function (frame)
+        GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
+        GameTooltip:SetText(MicroButtonTooltipText(self:GetGlobalValue("CHARACTER_INFO"), "TOGGLECHARACTER0"), 1.0, 1.0, 1.0);
+    end);
+    CharacterFrameTab2:SetScript("OnEnter", function (frame)
+        GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
+        GameTooltip:SetText(MicroButtonTooltipText(self:GetGlobalValue("PETS"), "TOGGLECHARACTER3"), 1.0, 1.0, 1.0);
+    end);
+    CharacterFrameTab3:SetScript("OnEnter", function (frame)
+        GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
+        GameTooltip:SetText(MicroButtonTooltipText(self:GetGlobalValue("REPUTATION"), "TOGGLECHARACTER2"), 1.0, 1.0, 1.0);
+    end);
+    CharacterFrameTab4:SetScript("OnEnter", function (frame)
+        GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
+        GameTooltip:SetText(MicroButtonTooltipText(self:GetGlobalValue("SKILLS"), "TOGGLECHARACTER1"), 1.0, 1.0, 1.0);
+    end);
+    CharacterFrameTab5:SetScript("OnEnter", function (frame)
+        GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
+        GameTooltip:SetText(MicroButtonTooltipText(self:GetGlobalValue("CURRENCY"), "TOGGLECURRENCY"), 1.0, 1.0, 1.0);
     end);
 end
 
