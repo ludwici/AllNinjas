@@ -1,0 +1,6 @@
+## Interface: 30300
+## Title: All Ninjas
+## Version: 0.1
+## Author: ludwici
+
+AllNinjas.xml
