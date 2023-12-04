@@ -28,11 +28,17 @@ function AllNinjas:OnInitialize()
     self:SecureHook("QuestInfo_ShowObjectives", "QuestInfo_ShowObjectives");
     self:SecureHook("WatchFrame_Update", "WatchFrame_Update");
     self:SecureHook("BattlefieldFrame_Update", "BattlefieldFrame_Update");
+    self:SecureHook("FriendsFrame_Update", "FriendsFrame_Update");
+    self:SecureHook("PendingList_UpdateTab", "PendingList_UpdateTab");
+    self:SecureHook("GuildStatus_Update", "GuildStatus_Update");
+    self:SecureHook("WhoList_Update", "WhoList_Update");
+    self:SecureHook("QuestLog_UpdateQuestCount", "QuestLog_UpdateQuestCount");
     -- self:RawHook("QuestInfo_ShowTitle", "QuestInfo_ShowTitle", true);
     self:RawHook("GetQuestLogTitle", "GetQuestLogTitle", true);
     self:RawHook("GetQuestLogQuestText", "GetQuestLogQuestText", true);
     self:RawHook("GetQuestLogLeaderBoard", "GetQuestLogLeaderBoard", true);
     self:RawHook("GetQuestLogCompletionText", "GetQuestLogCompletionText", true);
+    self:RawHook("GetProgressText", "GetProgressText", true);
 
     -- REWARD_ITEMS_ONLY - "Вы получите"
 end
@@ -45,33 +51,62 @@ local function FormatQuestText(questText)
     return string.gsub(questText, "($[Gg])([^:]+):([^;]+);", "%"..UnitSex("player"));
 end
 
+function AllNinjas:UISetText(button, text)
+    button:SetText(self:GetGlobalValue(text));
+end
+
 function AllNinjas:LoadDefaults()
-    QuestInfoDescriptionHeader:SetText(self:GetGlobalValue("QUEST_DESCRIPTION"));
-    QuestInfoRewardsHeader:SetText(self:GetGlobalValue("QUEST_REWARDS"));
-    QuestInfoItemChooseText:SetText(self:GetGlobalValue("REWARD_CHOICES"));
-    QuestInfoXPFrameReceiveText:SetText(self:GetGlobalValue("EXPERIENCE_COLON"));
-    QuestLogFrameTrackButton:SetText(self:GetGlobalValue("TRACK_QUEST_ABBREV"));
-    QuestLogFramePushQuestButton:SetText(self:GetGlobalValue("SHARE_QUEST_ABBREV"));
-    QuestLogFrameAbandonButton:SetText(self:GetGlobalValue("ABANDON_QUEST_ABBREV"));
-    QuestLogFrameCancelButton:SetText(self:GetGlobalValue("CLOSE"));
-    GossipFrameGreetingGoodbyeButton:SetText(self:GetGlobalValue("GOODBYE"));
-    QuestFrameGreetingGoodbyeButton:SetText(self:GetGlobalValue("GOODBYE"));
-    BattlefieldFrameJoinButton:SetText(self:GetGlobalValue("BATTLEFIELD_JOIN"));
-    BattlefieldFrameGroupJoinButton:SetText(self:GetGlobalValue("BATTLEFIELD_GROUP_JOIN"));
-    BattlefieldFrameCancelButton:SetText(self:GetGlobalValue("CANCEL"));
-    QuestFrameCompleteQuestButton:SetText(self:GetGlobalValue("COMPLETE_QUEST"));
-    QuestFrameCancelButton:SetText(self:GetGlobalValue("CANCEL"));
-    QuestFrameAcceptButton:SetText(self:GetGlobalValue("ACCEPT"));
-    QuestFrameDeclineButton:SetText(self:GetGlobalValue("DECLINE"));
-    QuestInfoObjectivesHeader:SetText(self:GetGlobalValue("QUEST_OBJECTIVES"));
-    QuestFrameCompleteButton:SetText(self:GetGlobalValue("CONTINUE"));
-    QuestFrameGoodbyeButton:SetText(self:GetGlobalValue("CANCEL"));
-    QuestProgressRequiredItemsText:SetText(self:GetGlobalValue("TURN_IN_ITEMS"));
-    CharacterFrameTab1:SetText(self:GetGlobalValue("CHARACTER"));
-    CharacterFrameTab2:SetText(self:GetGlobalValue("PETS"));
-    CharacterFrameTab3:SetText(self:GetGlobalValue("REPUTATION_ABBR"));
-    CharacterFrameTab4:SetText(self:GetGlobalValue("SKILLS_ABBR"));
-    CharacterFrameTab5:SetText(self:GetGlobalValue("CURRENCY"));
+    self:UISetText(FriendsFrameSendMessageButton, "SEND_MESSAGE");
+    self:UISetText(FriendsFrameAddFriendButton, "ADD_FRIEND");
+    self:UISetText(FriendsTabHeaderTab3, "PENDING_INVITE");
+    self:UISetText(FriendsTabHeaderTab2, "IGNORE");
+    self:UISetText(FriendsTabHeaderTab1, "FRIENDS");
+    self:UISetText(QuestInfoItemChooseText, "REWARD_CHOICES");
+    self:UISetText(QuestInfoXPFrameReceiveText, "EXPERIENCE_COLON");
+    self:UISetText(QuestLogFrameTrackButton, "TRACK_QUEST_ABBREV");
+    self:UISetText(QuestLogFramePushQuestButton, "SHARE_QUEST_ABBREV");
+    self:UISetText(QuestLogFrameAbandonButton, "ABANDON_QUEST_ABBREV");
+    self:UISetText(QuestLogFrameCancelButton, "CLOSE");
+    self:UISetText(GossipFrameGreetingGoodbyeButton, "GOODBYE");
+    self:UISetText(QuestFrameGreetingGoodbyeButton, "GOODBYE");
+    self:UISetText(BattlefieldFrameJoinButton, "BATTLEFIELD_JOIN");
+    self:UISetText(BattlefieldFrameGroupJoinButton, "BATTLEFIELD_GROUP_JOIN");
+    self:UISetText(BattlefieldFrameCancelButton, "CANCEL");
+    self:UISetText(QuestFrameCompleteQuestButton, "COMPLETE_QUEST");
+    self:UISetText(QuestFrameCancelButton, "CANCEL");
+    self:UISetText(QuestFrameAcceptButton, "ACCEPT");
+    self:UISetText(QuestFrameDeclineButton, "DECLINE");
+    self:UISetText(QuestInfoObjectivesHeader, "QUEST_OBJECTIVES");
+    self:UISetText(QuestFrameCompleteButton, "CONTINUE");
+    self:UISetText(QuestFrameGoodbyeButton, "CANCEL");
+    self:UISetText(QuestProgressRequiredItemsText, "TURN_IN_ITEMS");
+    self:UISetText(CharacterFrameTab1, "CHARACTER");
+    self:UISetText(CharacterFrameTab2, "PETS");
+    self:UISetText(CharacterFrameTab3, "REPUTATION_ABBR");
+    self:UISetText(CharacterFrameTab4, "SKILLS_ABBR");
+    self:UISetText(CharacterFrameTab5, "CURRENCY");
+    self:UISetText(FriendsFrameTab1, "FRIENDS");
+    self:UISetText(FriendsFrameTab2, "WHO");
+    self:UISetText(FriendsFrameTab3, "GUILD");
+    -- FriendsFrameTab3:SetText(string.sub(AllNinjas:GetGlobalValue("GUILD"), 1, 3));
+    self:UISetText(QuestInfoRewardsHeader, "QUEST_REWARDS");
+    self:UISetText(QuestInfoDescriptionHeader, "QUEST_DESCRIPTION");
+    self:UISetText(WhoFrameColumnHeader1, "NAME");
+    self:UISetText(WhoFrameColumnHeader3, "LEVEL_ABBR");
+    self:UISetText(WhoFrameColumnHeader4, "CLASS");
+    self:UISetText(WhoFrameGroupInviteButton, "GROUP_INVITE");
+    self:UISetText(WhoFrameAddFriendButton, "ADD_FRIEND");
+    self:UISetText(WhoFrameWhoButton, "REFRESH");
+    self:UISetText(GuildFrameColumnHeader1, "NAME");
+    self:UISetText(GuildFrameColumnHeader2, "ZONE");
+    self:UISetText(GuildFrameColumnHeader3, "LEVEL_ABBR");
+    self:UISetText(GuildFrameColumnHeader4, "CLASS");
+    self:UISetText(GuildFrameLFGButtonText, "SHOW_OFFLINE_MEMBERS");
+    self:UISetText(GuildFrameNotesLabel, "GUILD_MOTD_LABEL");
+    self:UISetText(GuildFrameGuildStatusColumnHeader1, "NAME");
+    self:UISetText(GuildFrameGuildStatusColumnHeader2, "RANK");
+    self:UISetText(GuildFrameGuildStatusColumnHeader3, "LABEL_NOTE");
+    self:UISetText(GuildFrameGuildStatusColumnHeader4, "LASTONLINE");
 
     QuestLogFrameTrackButton:SetScript("OnEnter", function (frame)
 		GameTooltip_AddNewbieTip(frame, self:GetGlobalValue("TRACK_QUEST"), 1.0, 1.0, 1.0, self:GetGlobalValue("NEWBIE_TOOLTIP_TRACKQUEST"), 1);
@@ -102,19 +137,115 @@ function AllNinjas:LoadDefaults()
         GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
         GameTooltip:SetText(MicroButtonTooltipText(self:GetGlobalValue("CURRENCY"), "TOGGLECURRENCY"), 1.0, 1.0, 1.0);
     end);
+    FriendsFrameTab1:SetScript("OnEnter", function (frame)
+		GameTooltip_AddNewbieTip(frame, MicroButtonTooltipText(self:GetGlobalValue("FRIENDS"), "TOGGLEFRIENDSTAB"), 1.0, 1.0, 1.0, self:GetGlobalValue("NEWBIE_TOOLTIP_FRIENDSTAB"), 1);
+    end);
+    FriendsFrameTab2:SetScript("OnEnter", function (frame)
+		GameTooltip_AddNewbieTip(frame, MicroButtonTooltipText(self:GetGlobalValue("WHO"), "TOGGLEWHOTAB"), 1.0, 1.0, 1.0, self:GetGlobalValue("NEWBIE_TOOLTIP_WHOTAB"), 1);
+    end);
+    FriendsFrameTab3:SetScript("OnEnter", function (frame)
+		GameTooltip_AddNewbieTip(frame, MicroButtonTooltipText(self:GetGlobalValue("GUILD"), "TOGGLEGUILDTAB"), 1.0, 1.0, 1.0, self:GetGlobalValue("NEWBIE_TOOLTIP_GUILDTAB"), 1);
+    end);
+    FriendsFrameAddFriendButton:SetScript("OnEnter", function (frame)
+		GameTooltip_AddNewbieTip(frame, self:GetGlobalValue("ADD_FRIEND"), 1.0, 1.0, 1.0, self:GetGlobalValue("NEWBIE_TOOLTIP_ADDFRIEND"), 1);
+    end);
+    FriendsFrameSendMessageButton:SetScript("OnEnter", function (frame)
+		GameTooltip_AddNewbieTip(frame, self:GetGlobalValue("SEND_MESSAGE"), 1.0, 1.0, 1.0, self:GetGlobalValue("NEWBIE_TOOLTIP_SENDMESSAGE"), 1);
+    end);
+    QuestLogDailyQuestCountMouseOverFrame:SetScript("OnEnter", function (frame)
+        GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
+        GameTooltip:SetText(format(self:GetGlobalValue("QUEST_LOG_DAILY_TOOLTIP"), GetMaxDailyQuests(), SecondsToTime(GetQuestResetTime(), nil, 1)));
+    end);
+end
+
+function AllNinjas:QuestLog_UpdateQuestCount(numQuests)
+	QuestLogQuestCount:SetFormattedText(self:GetGlobalValue("QUEST_LOG_COUNT_TEMPLATE"), numQuests, MAX_QUESTLOG_QUESTS);
+	local dailyQuestsComplete = GetDailyQuestsCompleted();
+    if (dailyQuestsComplete > 0) then
+		QuestLogDailyQuestCount:SetFormattedText(self:GetGlobalValue("QUEST_LOG_DAILY_COUNT_TEMPLATE"), dailyQuestsComplete, GetMaxDailyQuests());
+    end
+end
+
+function AllNinjas:WhoList_Update()
+    local _, totalCount = GetNumWhoResults();
+	local displayedText = "";
+    if (totalCount > MAX_WHOS_FROM_SERVER) then
+		displayedText = format(WHO_FRAME_SHOWN_TEMPLATE, MAX_WHOS_FROM_SERVER);
+    end
+	WhoFrameTotals:SetText(format(self:GetGlobalValue("WHO_FRAME_TOTAL_TEMPLATE"), totalCount).."  "..displayedText);
+end
+
+function AllNinjas:PendingList_UpdateTab()
+	local numPending = BNGetNumFriendInvites();
+	if (numPending > 0) then
+		FriendsTabHeaderTab3:SetText(self:GetGlobalValue("PENDING_INVITE").." ("..numPending..")");
+    else
+        FriendsTabHeaderTab3:SetText(self:GetGlobalValue("PENDING_INVITE"));
+    end
+	PanelTemplates_TabResize(FriendsTabHeaderTab3, 0);
+end
+
+function AllNinjas:GuildStatus_Update()
+    local numGuildMembers = GetNumGuildMembers();
+	local onlinecount = 0;
+    local online;
+    for i = 1, numGuildMembers do
+        online = select(9, GetGuildRosterInfo(i));
+        if (online) then
+            onlinecount = onlinecount + 1;
+        end
+    end
+	GuildFrameTotals:SetFormattedText(self:GetGlobalValue("GUILD_TOTAL"), numGuildMembers);
+	GuildFrameOnlineTotals:SetFormattedText(self:GetGlobalValue("GUILD_TOTALONLINE"), onlinecount);
+    if (FriendsFrame.playerStatusFrame) then
+        self:UISetText(GuildFrameGuildListToggleButton, "PLAYER_STATUS")
+    else
+        self:UISetText(GuildFrameGuildListToggleButton, "GUILD_STATUS")
+    end
+end
+
+function AllNinjas:FriendsFrame_Update()
+    if (FriendsFrame.selectedTab == 1) then
+        if (FriendsTabHeader.selectedTab == 1) then
+            self:UISetText(FriendsFrameTitleText, "FRIENDS_LIST");
+        elseif (FriendsTabHeader.selectedTab == 3) then
+            self:UISetText(FriendsFrameTitleText, "PENDING_INVITE_LIST");
+        else
+            self:UISetText(FriendsFrameTitleText, "IGNORE_LIST");
+        end
+    else
+        if (FriendsFrame.selectedTab == 2) then
+            self:UISetText(FriendsFrameTitleText, "WHO_LIST");
+        elseif (FriendsFrame.selectedTab == 3) then
+            local guildName, title = GetGuildInfo("player");
+			if (guildName) then
+				FriendsFrameTitleText:SetFormattedText(self:GetGlobalValue("GUILD_TITLE_TEMPLATE"), title, guildName);
+			else
+				FriendsFrameTitleText:SetText("");
+			end
+        elseif (FriendsFrame.selectedTab == 4) then
+            self:UISetText(FriendsFrameTitleText, "CHAT_CHANNELS");
+        elseif (FriendsFrame.selectedTab == 5) then
+            self:UISetText(FriendsFrameTitleText, "RAID");
+        end
+    end
 end
 
 function AllNinjas:WatchFrame_Update()
-    WatchFrameTitle:SetText(self:GetGlobalValue("OBJECTIVES_TRACKER_LABEL"));
+    self:UISetText(WatchFrameTitle, "OBJECTIVES_TRACKER_LABEL");
 end
 
 function AllNinjas:GetQuestLogLeaderBoard(objIndex, questIndex)
     local text, type, finished = self.hooks.GetQuestLogLeaderBoard(objIndex, questIndex);
-    local qId = self:GetQuestIDFromLog(GetQuestLogSelection());
+    if (not questIndex) then
+        questIndex = GetQuestLogSelection();
+    end
+
+    local qId = self:GetQuestIDFromLog(questIndex);
     local questInfo = AllNinjasData.quests[self.currentKey][qId];
     if (questInfo and questInfo.ol) then
         if (objIndex <= #questInfo.ol) then
-            if (type == "item") then
+            if (type == "item" or type == "monster") then
                 local _, _, _, numItems, numNeeded = string.find(text, "(.*):%s*([%d]+)%s*/%s*([%d]+)");
                 text = questInfo.ol[objIndex]..": "..numItems.."/"..numNeeded;
             end
@@ -128,9 +259,9 @@ function AllNinjas:BattlefieldFrame_Update()
 	local mapName, mapDescription, maxGroup = GetBattlefieldInfo();
     -- print(mapName, mapDescription);
     if (maxGroup and maxGroup == 5) then
-		BattlefieldFrameGroupJoinButton:SetText(self:GetGlobalValue("JOIN_AS_PARTY"));
+        self:UISetText(BattlefieldFrameGroupJoinButton, "JOIN_AS_PARTY");
 	else
-		BattlefieldFrameGroupJoinButton:SetText(self:GetGlobalValue("JOIN_AS_GROUP"));
+        self:UISetText(BattlefieldFrameGroupJoinButton, "JOIN_AS_GROUP");
 	end
 end
 
@@ -152,19 +283,34 @@ end
 
 function AllNinjas:GetQuestLogCompletionText(index)
     local obj = self.hooks.GetQuestLogCompletionText(index);
-    local questInfo = AllNinjasData.quests[self.currentKey][qId];
+    local questInfo = self:GetQuestInfo();
     if (questInfo and questInfo.o) then
         obj = questInfo.o;
-        print(obj);
     end
     return obj;
 end
 
-function AllNinjas:GetQuestLogQuestText()
-    local desc, objectives = self.hooks.GetQuestLogQuestText();
+function AllNinjas:GetQuestInfo()
     local qId = self:GetQuestIDFromLog(GetQuestLogSelection());
     local questInfo = AllNinjasData.quests[self.currentKey][qId];
+    return questInfo;
+end
+
+function AllNinjas:GetProgressText()
+    local progress = self.hooks.GetProgressText();
+    -- local questInfo = self:GetQuestInfo();
+    -- if (questInfo and questInfo.p) then
+    --     progress = questInfo.p;
+    -- end
+    -- print(progress)
+    return progress;
+end
+
+function AllNinjas:GetQuestLogQuestText()
+    local desc, objectives = self.hooks.GetQuestLogQuestText();
+    local questInfo = self:GetQuestInfo();
     if (questInfo) then
+        print(questInfo.d)
         if (questInfo.d) then
             desc = FormatQuestText(questInfo.d);
         end
@@ -236,25 +382,11 @@ function AllNinjas:GetQuestIDFromLog(selectionId)
 end
 
 function AllNinjas:QuestLog_SetSelection(index)
-    -- print(index)
     local qId = self:GetQuestIDFromLog(index);
     if (not qId) then
         return;
     end
     QuestLogFrame.currentIdLabel:SetText("Id: "..qId);
-    -- print(qId, type(qId))
-    -- local questInfo = AllNinjasData.quests[self.currentKey][qId];
-    -- print(questInfo)
-    -- if (not questInfo) then
-    --     return;
-    -- end
-    -- if (questInfo.t) then
-    --     QuestInfoTitleHeader:SetText(questInfo.t);
-    -- end
-    -- if (questInfo.d) then
-    --     QuestInfoDescriptionText:SetText(questInfo.d);
-    -- end
-    -- QuestInfoTitleHeader:SetText(questTitle);
 end
 
 function AllNinjas:QUEST_LOG_UPDATE()
