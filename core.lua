@@ -1,4 +1,4 @@
-local _G, tonumber = _G, tonumber
+local _G, tonumber, select, unpack = _G, tonumber, select, unpack
 
 AllNinjas = LibStub("AceAddon-3.0"):NewAddon("AllNinjas", "AceEvent-3.0", "AceHook-3.0")
 AllNinjas.version = GetAddOnMetadata("AllNinjas", "Version");
@@ -6,6 +6,7 @@ AllNinjas.currentKey = "ruRU";
 
 AllNinjasData = {};
 AllNinjasData.quests = {};
+AllNinjasData.items = {};
 AllNinjasData.globals = {};
 
 function AllNinjas:OnInitialize()
@@ -306,10 +307,11 @@ function AllNinjas:GetQuestLogLeaderBoard(objIndex, questIndex)
             if (type == "item" or type == "monster") then
                 local _, _, _, numItems, numNeeded = string.find(text, "(.*):%s*([%d]+)%s*/%s*([%d]+)");
                 text = questInfo.ol[objIndex]..": "..numItems.."/"..numNeeded;
+            else
+                text = questInfo.ol[objIndex];
             end
         end
     end
-
     return text, type, finished;
 end
 
@@ -325,18 +327,18 @@ end
 
 function AllNinjas:QuestInfo_ShowObjectives()
     print("Checl")
-    local numObjectives = GetNumQuestLeaderBoards();
-	local objective;
-    local text;
-    local finished;
-    for i = 1, numObjectives do
-        objective = _G["QuestInfoObjective"..i];
-        _, _, finished = GetQuestLogLeaderBoard(i);
-        if (finished) then
-            text = objective:GetText();
-            objective:SetText(string.gsub(text, COMPLETE, self:GetGlobalValue("COMPLETE")));
-        end
-    end
+    -- local numObjectives = GetNumQuestLeaderBoards();
+	-- local objective;
+    -- local text;
+    -- local finished;
+    -- for i = 1, numObjectives do
+    --     objective = _G["QuestInfoObjective"..i];
+    --     _, _, finished = GetQuestLogLeaderBoard(i);
+    --     if (finished) then
+    --         text = objective:GetText();
+    --         objective:SetText(string.gsub(text, COMPLETE, self:GetGlobalValue("COMPLETE")));
+    --     end
+    -- end
 end
 
 function AllNinjas:GetQuestLogCompletionText(index)
@@ -368,7 +370,7 @@ function AllNinjas:GetQuestLogQuestText()
     local desc, objectives = self.hooks.GetQuestLogQuestText();
     local questInfo = self:GetQuestInfo();
     if (questInfo) then
-        print(questInfo.d)
+        -- print(questInfo.d)
         if (questInfo.d) then
             desc = FormatQuestText(questInfo.d);
         end
