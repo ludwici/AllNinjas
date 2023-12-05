@@ -39,6 +39,17 @@ function AllNinjas:OnInitialize()
     self:RawHook("GetQuestLogLeaderBoard", "GetQuestLogLeaderBoard", true);
     self:RawHook("GetQuestLogCompletionText", "GetQuestLogCompletionText", true);
     self:RawHook("GetProgressText", "GetProgressText", true);
+    self:RawHook("GetItemInfo", "GetItemInfo", true);
+    self:RawHook("GameTooltip_OnTooltipAddMoney", "GameTooltip_OnTooltipAddMoney", true);
+
+    self:HookScript(GameTooltip, "OnTooltipSetItem", "ItemTooltip");
+	self:HookScript(ItemRefTooltip, "OnTooltipSetItem",	"ItemTooltip");
+	self:HookScript(ItemRefShoppingTooltip1, "OnTooltipSetItem", "ItemTooltip");
+	self:HookScript(ItemRefShoppingTooltip2, "OnTooltipSetItem", "ItemTooltip");
+	self:HookScript(ItemRefShoppingTooltip3, "OnTooltipSetItem", "ItemTooltip");
+	self:HookScript(ShoppingTooltip1, "OnTooltipSetItem", "ItemTooltip");
+	self:HookScript(ShoppingTooltip2, "OnTooltipSetItem", "ItemTooltip");
+	self:HookScript(ShoppingTooltip3, "OnTooltipSetItem", "ItemTooltip");
 
     -- REWARD_ITEMS_ONLY - "Вы получите"
 end
@@ -49,6 +60,53 @@ local function FormatQuestText(questText)
     -- questText = string.gsub(questText, "$[Rr]", strlower(UnitRace("player")));
     questText = string.gsub(questText, "$[Bb]", "\n");
     return string.gsub(questText, "($[Gg])([^:]+):([^;]+);", "%"..UnitSex("player"));
+end
+
+function AllNinjas:ItemTooltip(tooltip)
+    local _, link = tooltip:GetItem();
+    if (not link) then
+        return;
+    end
+	local id = tonumber(string.match(link, "item:(%d*)"));
+    if (not id) then
+        return;
+    end
+    local itemInfo = AllNinjasData.items[self.currentKey][id];
+    if (not itemInfo) then
+        return;
+    end
+    local toolTipName = tooltip:GetName();
+    if (itemInfo.t) then
+        _G[toolTipName.."TextLeft1"]:SetText(itemInfo.t);
+    end
+    local startIndex = 2;
+    local str = _G[toolTipName.."TextLeft2"]
+    local text;
+    -- print(str:GetText());
+    local textColor;
+    while (str) do
+        text = str:GetText();
+        if (text and text ~= "" and text ~= " ") then
+            -- print("start_", text, "_end");
+            textColor = {str:GetTextColor()};
+            -- print(textColor[1], textColor[2], textColor[3], textColor[4]);
+            if (string.find(text, ITEM_BIND_ON_PICKUP)) then
+                -- print(text);
+                -- textColor = {str:GetTextColor()};
+                -- print(textColor[1], textColor[2], textColor[3], textColor[4]);
+                str:SetText(string.gsub(text, ITEM_BIND_ON_PICKUP, self:GetGlobalValue("ITEM_BIND_ON_PICKUP")));
+                str:SetTextColor(textColor[1], textColor[2], textColor[3], textColor[4]);
+            elseif (string.sub(text, 1, 1) == '"' and string.sub(text, -1) == '"') then
+                -- print("Desc:", text);
+                str:SetText(text:gsub('"(.-)"', '"'..itemInfo.d..'"'));
+            elseif (string.find(text, SELL_PRICE)) then
+                str:SetText(string.gsub(text, SELL_PRICE, self:GetGlobalValue("SELL_PRICE")));
+            end
+            str:SetTextColor(textColor[1], textColor[2], textColor[3], textColor[4]);
+        end
+        startIndex = startIndex + 1;
+        str = _G[toolTipName.."TextLeft"..startIndex];
+    end
 end
 
 function AllNinjas:UISetText(button, text)
@@ -319,6 +377,26 @@ function AllNinjas:GetQuestLogQuestText()
         end
     end
     return desc, objectives;
+end
+
+function AllNinjas:GetItemInfo(itemID)
+    local values = {self.hooks.GetItemInfo(itemID)};
+    local item = AllNinjasData.items[self.currentKey][itemID];
+    if (item) then
+        values[1] = item.t;
+    end
+    return unpack(values);
+end
+
+function AllNinjas:GameTooltip_OnTooltipAddMoney(frame, cost, maxcost)
+    if( not maxcost ) then
+		SetTooltipMoney(frame, cost, nil, string.format("%s:", self:GetGlobalValue("SELL_PRICE")));
+	else
+		frame:AddLine(string.format("%s:", self:GetGlobalValue("SELL_PRICE")), 1.0, 1.0, 1.0);
+		local indent = string.rep(" ",4);
+		SetTooltipMoney(frame, cost, nil, string.format("%s%s:", indent, MINIMUM));
+		SetTooltipMoney(frame, maxcost, nil, string.format("%s%s:", indent, MAXIMUM));
+	end
 end
 
 function AllNinjas:GetQuestLogTitle(index)

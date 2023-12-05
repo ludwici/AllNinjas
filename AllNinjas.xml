@@ -3,6 +3,7 @@
     <Include file="Libs\libs.xml"/>
     <Script file="core.lua"/>
     <Script file="db\ruRU\quests.lua"/>
+    <Script file="db\ruRU\items.lua"/>
     <Script file="db\ruRU\globals.lua"/>
 
 </Ui>
